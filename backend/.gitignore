@@ -7,3 +7,5 @@ Offroad_Segmentation_Training_Dataset
 best_model.pth
 
 model_fp16.pth
+
+predictions
