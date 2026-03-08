@@ -77,8 +77,8 @@ Pre-trained model weights are hosted on Google Drive. Download the relevant chec
 
 | Model | File | Google Drive |
 |-------|------|--------------|
-| SegFormer-B2 (final) | `best_model_final.pth` | *[Link — add here]* |
-| CNN baseline | `cnn_best.pth` | *[Link — add here]* |
+| SegFormer-B2 (final) | `best_model.pth` | *https://drive.google.com/drive/folders/1Kb3svtOPlLsey1_5CXUDD8mhn5EXKCFb?usp=sharing* |
+| CNN baseline | `best_unet_model.pth` | *https://drive.google.com/drive/folders/1cSzW3QO_VLRYrZqGZxPkO7PdgkVU2jHQ?usp=sharing* |
 
 > **Custom path:** If you prefer to store the weights elsewhere, update `CKPT_PATH` in `segformer_train.py` / `segformer_test.py` and the equivalent variable in the CNN scripts.
 
@@ -143,12 +143,12 @@ python segformer_train.py
 
 The script will:
 1. Train for 20 epochs (3 warm-up + 17 end-to-end by default)
-2. Save the best checkpoint by validation IoU to `best_model_final.pth`
+2. Save the best checkpoint by validation IoU to `best_model.pth`
 3. Save training plots to `train_stats/all_metrics.png`
 4. Save per-epoch metrics to `train_stats/metrics.txt`
 5. Run a latency benchmark (50-pass, GPU events) after training
 
-**Resuming from a checkpoint:** If `best_model_final.pth` already exists in the working directory, the script will automatically resume from where it left off.
+**Resuming from a checkpoint:** If `best_model.pth` already exists in the working directory, the script will automatically resume from where it left off.
 
 Key hyperparameters (edit at the top of the script):
 
@@ -199,7 +199,7 @@ python segformer_train.py --eval
 Update these variables at the top of `segformer_test.py` before running:
 
 ```python
-MODEL_PATH = "../best_model_final.pth"          # path to checkpoint
+MODEL_PATH = "../best_model.pth"          # path to checkpoint
 DATA_DIR   = "../Offroad_Segmentation_testImages/..."
 OUTPUT_DIR = "../predictions1"                  # where to save prediction masks
 ```
