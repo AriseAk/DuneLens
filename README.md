@@ -4,6 +4,17 @@ DuneLens is a semantic segmentation system for desert / offroad UGV imagery. It 
 
 ---
 
+## Project Resources
+
+| Resource | Link |
+|----------|------|
+| 📦 Full project (code, models, demo video, PPT) | https://drive.google.com/drive/folders/1qnKCMCocwsdO_3yxAU0UbUVRJt1KAE1f?usp=sharing |
+| 🤖 SegFormer-B2 weights | https://drive.google.com/drive/folders/1Kb3svtOPlLsey1_5CXUDD8mhn5EXKCFb?usp=sharing |
+| 🧠 CNN baseline weights | https://drive.google.com/drive/folders/1cSzW3QO_VLRYrZqGZxPkO7PdgkVU2jHQ?usp=sharing |
+| 📊 Dataset source (Duality AI — EliteHack) | https://falcon.duality.ai/secure/documentation/hackathon-segmentation-desert?utm_source=hackathon&utm_medium=instructions&utm_campaign=elitehack |
+
+---
+
 ## Table of Contents
 
 - [Project Structure](#project-structure)
@@ -77,7 +88,7 @@ The model segments images into 11 classes:
 
 ## Models
 
-Pre-trained model weights are hosted on Google Drive. Download the relevant checkpoint(s) and place them at the paths shown below.
+Pre-trained model weights are available on Google Drive (also included in the full project folder above). Download the relevant checkpoint(s) and place them at the paths shown below.
 
 | Model | Required Path | Google Drive |
 |-------|--------------|--------------|
@@ -157,7 +168,15 @@ Navigate to the **Prediction** page, upload an offroad image, and the segmentati
 
 ---
 
-## Dataset Layout
+## Dataset
+
+The dataset was provided by **Duality AI** as part of the **EliteHack** hackathon challenge. It contains labelled offroad/desert imagery split into train, validation, and test sets.
+
+**Dataset source:** https://falcon.duality.ai/secure/documentation/hackathon-segmentation-desert?utm_source=hackathon&utm_medium=instructions&utm_campaign=elitehack
+
+> Access to the dataset portal may require hackathon registration. If you have been provided the dataset files directly, skip to the layout section below.
+
+### Dataset Layout
 
 Both training and test directories must follow this structure:
 
