@@ -18,10 +18,10 @@ IMG_H     = 640
 IMG_W     = 640
 N_CLASSES = 11          # Both models now output 11 classes
 
-DATA_DIR   = "./Offroad_Segmentation_testImages/Offroad_Segmentation_testImages"
+DATA_DIR   = "../Offroad_Segmentation_testImages/Offroad_Segmentation_testImages"
 image_dir  = os.path.join(DATA_DIR, "Color_Images")
 mask_dir   = os.path.join(DATA_DIR, "Segmentation")
-OUTPUT_DIR = "./ensemble_predictions_v2"
+OUTPUT_DIR = "./ensemble_predictions_v3"
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # =============================================================================
@@ -145,7 +145,7 @@ model_b2 = SegformerForSemanticSegmentation.from_pretrained(
     num_labels=N_CLASSES,
     ignore_mismatched_sizes=True,
 )
-ckpt_b2 = torch.load("best_model_final.pth", map_location=DEVICE)
+ckpt_b2 = torch.load("../best_model_final.pth", map_location=DEVICE)
 model_b2.load_state_dict(ckpt_b2["model_state_dict"])
 model_b2.to(DEVICE).eval()
 print(f"  B2 loaded  (epoch {ckpt_b2.get('epoch','?')}, "
@@ -164,7 +164,7 @@ cnn = smp.Unet(
     classes=N_CLASSES,   # 11 — no slicing needed anymore
     activation=None,
 )
-ckpt_cnn = torch.load("best_unet_model.pth", map_location=DEVICE, weights_only=False)
+ckpt_cnn = torch.load("../best_unet_model.pth", map_location=DEVICE, weights_only=False)
 cnn.load_state_dict(ckpt_cnn["model_state_dict"])
 cnn.to(DEVICE).eval()
 print(f"  CNN loaded (epoch {ckpt_cnn.get('epoch','?')}, "

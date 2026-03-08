@@ -15,9 +15,9 @@ import segmentation_models_pytorch as smp
 plt.switch_backend('Agg')
 
 
-TRAIN_DIR  = '/content/drive/MyDrive/EliteHack/Offroad_Segmentation_Training_Dataset/train'
-VAL_DIR    = '/content/drive/MyDrive/EliteHack/Offroad_Segmentation_Training_Dataset/val'
-OUTPUT_DIR = '/content/drive/MyDrive/EliteHack/outputs'
+TRAIN_DIR  = "../Offroad_Segmentation_Training_Dataset/Offroad_Segmentation_Training_Dataset/train"
+VAL_DIR    = "../Offroad_Segmentation_Training_Dataset/Offroad_Segmentation_Training_Dataset/val"
+OUTPUT_DIR = "../train_stats"
 
 # =============================================================================
 # Hyperparameters
