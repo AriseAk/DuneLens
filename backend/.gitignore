@@ -5,7 +5,20 @@ Offroad_Segmentation_testImages
 Offroad_Segmentation_Training_Dataset
 
 best_model.pth
+best_model_final.pth
 
 model_fp16.pth
 
 predictions
+
+predictions1
+
+best_model.zip
+
+best_model_first.pth
+
+best_unet_model.pth
+
+b2_predictions
+
+ensemble_predictions_v2
