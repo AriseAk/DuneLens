@@ -1,6 +1,6 @@
 # DuneLens — Offroad Semantic Segmentation
 
-DuneLens is a semantic segmentation system for desert / offroad UGV imagery. It uses a fine-tuned **SegFormer-B2** as the primary model, with a **CNN baseline** included for comparison. A Next.js frontend provides a live prediction interface backed by a Python inference server.
+DuneLens is a semantic segmentation system for desert / offroad UGV imagery. It uses a fine-tuned **SegFormer-B2** as the primary model, with a **CNN baseline** included for comparison. A Next.js frontend provides a live prediction interface backed by a FastAPI inference server.
 
 ---
 
@@ -10,6 +10,7 @@ DuneLens is a semantic segmentation system for desert / offroad UGV imagery. It 
 - [Classes](#classes)
 - [Models](#models)
 - [Environment Setup](#environment-setup)
+- [Running the App](#running-the-app)
 - [Dataset Layout](#dataset-layout)
 - [Training](#training)
   - [SegFormer (primary)](#segformer-primary)
@@ -17,7 +18,7 @@ DuneLens is a semantic segmentation system for desert / offroad UGV imagery. It 
 - [Evaluation / Testing](#evaluation--testing)
   - [SegFormer](#segformer-test)
   - [CNN](#cnn-test)
-- [Running the Full App](#running-the-full-app)
+  - [Ensemble](#ensemble)
 - [Experiments](#experiments)
 - [Training Stats](#training-stats)
 - [Configuration Reference](#configuration-reference)
@@ -28,7 +29,10 @@ DuneLens is a semantic segmentation system for desert / offroad UGV imagery. It 
 
 ```
 ariseak-dunelens/
-├── main.py                          # Backend entry point (inference server)
+├── main.py                          # Backend entry point (FastAPI inference server)
+├── model/
+│   └── best_model/
+│       └── best_model.pth           # ← place SegFormer weights here
 ├── backend/
 │   ├── Scripts/
 │   │   ├── segformer_train.py       # SegFormer-B2 training (primary model)
@@ -73,35 +77,83 @@ The model segments images into 11 classes:
 
 ## Models
 
-Pre-trained model weights are hosted on Google Drive. Download the relevant checkpoint(s) and place them in the `backend/` root folder (or update the `MODEL_PATH` / `CKPT_PATH` variables in the relevant scripts to point to a custom location).
+Pre-trained model weights are hosted on Google Drive. Download the relevant checkpoint(s) and place them at the paths shown below.
 
-| Model | File | Google Drive |
-|-------|------|--------------|
-| SegFormer-B2 (final) | `best_model.pth` | *https://drive.google.com/drive/folders/1Kb3svtOPlLsey1_5CXUDD8mhn5EXKCFb?usp=sharing* |
-| CNN baseline | `best_unet_model.pth` | *https://drive.google.com/drive/folders/1cSzW3QO_VLRYrZqGZxPkO7PdgkVU2jHQ?usp=sharing* |
+| Model | Required Path | Google Drive |
+|-------|--------------|--------------|
+| SegFormer-B2 (final) | `model/best_model/best_model.pth` | https://drive.google.com/drive/folders/1Kb3svtOPlLsey1_5CXUDD8mhn5EXKCFb?usp=sharing |
+| CNN baseline | `backend/best_unet_model.pth` | https://drive.google.com/drive/folders/1cSzW3QO_VLRYrZqGZxPkO7PdgkVU2jHQ?usp=sharing |
 
-> **Custom path:** If you prefer to store the weights elsewhere, update `CKPT_PATH` in `segformer_train.py` / `segformer_test.py` and the equivalent variable in the CNN scripts.
+> **Custom path:** If you prefer to store the weights elsewhere, update `MODEL_PATH` / `CKPT_PATH` at the top of the relevant script to match your chosen location.
 
 ---
 
 ## Environment Setup
 
-**Python >= 3.10** is required. A conda environment is recommended.
+**Python >= 3.10** and **Node.js >= 18** are required.
+
+### Python (Backend)
+
+A conda environment is recommended:
 
 ```bash
 conda create -n dunelens python=3.11
 conda activate dunelens
-
-pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
-pip install transformers albumentations opencv-python-headless tqdm matplotlib
 ```
 
-For the frontend:
+Install all backend dependencies:
+
+```bash
+pip install fastapi uvicorn pydantic torch torchvision transformers pillow numpy albumentations opencv-python-headless tqdm matplotlib
+```
+
+> If you run into conflicts between TensorFlow and the Hugging Face `transformers` library, run `pip uninstall tensorflow -y` to enforce a PyTorch-only environment.
+
+### Node.js (Frontend)
 
 ```bash
 cd frontend
 npm install
 ```
+
+---
+
+## Running the App
+
+You need **two terminal windows** open simultaneously — one for the backend, one for the frontend.
+
+### Terminal 1 — Backend (FastAPI Server)
+
+Run this from the **root directory** of the project:
+
+```bash
+conda activate dunelens
+uvicorn main:app --reload --port 8000
+```
+
+Wait until you see both of these messages before moving on:
+
+```
+Model loaded successfully!
+Uvicorn running on http://127.0.0.1:8000
+```
+
+### Terminal 2 — Frontend (Next.js)
+
+Open a second terminal and run:
+
+```bash
+cd frontend
+npm run dev
+```
+
+Once both are running, open your browser and go to:
+
+```
+http://localhost:3000
+```
+
+Navigate to the **Prediction** page, upload an offroad image, and the segmentation mask will be returned from the model in real time.
 
 ---
 
@@ -183,7 +235,7 @@ Update the dataset paths and hyperparameters at the top of the script as needed.
 
 **Script:** `backend/Scripts/segformer_test.py`
 
-Runs inference on a test set and reports mean IoU across all images. Predictions are optionally saved to an output directory.
+Runs inference on a test set and reports mean IoU across all images. Predictions are saved to an output directory.
 
 ```bash
 cd backend/Scripts
@@ -199,9 +251,9 @@ python segformer_train.py --eval
 Update these variables at the top of `segformer_test.py` before running:
 
 ```python
-MODEL_PATH = "../best_model.pth"          # path to checkpoint
+MODEL_PATH = "../best_model.pth"
 DATA_DIR   = "../Offroad_Segmentation_testImages/..."
-OUTPUT_DIR = "../predictions1"                  # where to save prediction masks
+OUTPUT_DIR = "../predictions1"
 ```
 
 ---
@@ -227,26 +279,6 @@ Combines SegFormer and CNN predictions. Requires both model checkpoints to be av
 cd backend/Scripts
 python ensemble_final.py
 ```
-
----
-
-## Running the Full App
-
-**Step 1 — Start the backend inference server:**
-
-```bash
-cd backend
-python ../main.py
-```
-
-**Step 2 — Start the frontend:**
-
-```bash
-cd frontend
-npm run dev
-```
-
-The app will be available at `http://localhost:3000`. Upload an image on the Prediction page to get a segmentation mask back from the model.
 
 ---
 
@@ -291,5 +323,5 @@ All key settings live as constants at the top of each script — no config files
 | `LR` | 6e-5 | Peak learning rate (decoder) |
 | `WEIGHT_DECAY` | 1e-4 | AdamW weight decay |
 | `FOCAL_GAMMA` | 2.0 | Focal loss gamma |
-| `CKPT_PATH` | `best_model_final.pth` | Checkpoint save/load path |
+| `CKPT_PATH` | `best_model.pth` | Checkpoint save/load path |
 | `OUTPUT_DIR` | `./train_stats` | Directory for plots and metrics |
