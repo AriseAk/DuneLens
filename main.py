@@ -19,8 +19,8 @@ app.add_middleware(
 )
 
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-# Point to the exact path from your screenshot
-MODEL_PATH = "model/best_model/best_model.pth" 
+# Point to the exact path according to your project structure
+MODEL_PATH = "./backend/best_model.pth" 
 
 CLASS_MAP = {
     0: {"name": "Background", "color": [0, 0, 0], "hex": "#000000"},
